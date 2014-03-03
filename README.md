@@ -32,7 +32,7 @@ At the moment, the program should support the following commands:
 
 ## Sample I/O
 
-Below is a sample run of the program. User input is prefixed with enter command:.
+Below is a sample run of the program. User input is prefixed with `enter command:`.
 
     enter command: C 20 4
     ----------------------
