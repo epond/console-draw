@@ -1,14 +1,17 @@
 package drawing
 
 import scalaz._
+import Scalaz._
 
 case class Coordinates(column: Int, row: Int) {
   def -(that: Coordinates): Coordinates = Coordinates(column - that.column, row - that.row)
+  lazy val left =  Coordinates(column-1, row)
+  lazy val right = Coordinates(column+1, row)
+  lazy val up =    Coordinates(column,   row-1)
+  lazy val down =  Coordinates(column,   row+1)
 }
 
 object DrawingEngine {
-  val lineColour = 'x'
-  val rectangleColour = 'x'
 
   def drawLine(startPos: Coordinates, endPos: Coordinates, canvas: Canvas): (String \/ Canvas) = {
     val difference = endPos - startPos
@@ -28,17 +31,17 @@ object DrawingEngine {
 
   def applyCommand(command: CanvasCommand, canvas: Canvas): (String \/ Canvas) = command match {
 
-    case NewCanvas(width, height) => {
+    case NewCanvasCommand(width, height) => {
       val edgeRow = Vector.fill(width+2)('-')
-      val innerRow = '|' +: Vector.fill(width)(' ') :+ '|'
-      \/-(Canvas(edgeRow +: Vector.fill(height)(innerRow) :+ edgeRow))
+      val innerRow = '|' +: Vector.fill(width)(emptyPosition) :+ '|'
+      Canvas(edgeRow +: Vector.fill(height)(innerRow) :+ edgeRow).right
     }
 
-    case DrawLine(startPos, endPos) => {
+    case DrawLineCommand(startPos, endPos) => {
       drawLine(startPos, endPos, canvas)
     }
 
-    case DrawRectangle(ulCorner: Coordinates, lrCorner: Coordinates) => {
+    case DrawRectangleCommand(ulCorner: Coordinates, lrCorner: Coordinates) => {
       for {
         canvas1 <- drawLine(Coordinates(ulCorner.column, ulCorner.row), Coordinates(lrCorner.column, ulCorner.row), canvas)
         canvas2 <- drawLine(Coordinates(lrCorner.column, ulCorner.row), Coordinates(lrCorner.column, lrCorner.row), canvas1)
@@ -47,22 +50,23 @@ object DrawingEngine {
       } yield canvas4
     }
 
-    case BucketFill(origin: Coordinates, colour: Char) => ??? // TODO
+    case BucketFillCommand(origin: Coordinates, colour: Char) => {
+      if (isOutOfBounds(origin, canvas)) {
+        -\/("Out of bounds")
+      } else {
+        drawLayer(BucketFill.buildLayer(origin, colour, canvas), canvas)
+      }
+    }
 
   }
 
   def drawLayer(layer: ColourLayer, canvas: Canvas): (String \/ Canvas) = {
     val (points, colour) = layer
 
-    val isOutOfBounds: Coordinates => Boolean = (point) => {
-      (point.column < 1 || point.column > canvas.rows(0).size-2) ||
-      (point.row < 1    || point.row    > canvas.rows.size-2)
-    }
-
-    if (points.exists(isOutOfBounds(_))) {
+    if (points.exists(isOutOfBounds(_, canvas))) {
       -\/("Out of bounds")
     } else {
-      val resultCanvas = points.foldRight(canvas){(point, canv) => Canvas(
+      points.foldRight(canvas){(point, canv) => Canvas(
         for {
           rowWithIndex <- canv.rows.zipWithIndex
         } yield {
@@ -73,8 +77,7 @@ object DrawingEngine {
             row
           }
         })
-      }
-      \/-(resultCanvas)
+      }.right
     }
   }
 }
