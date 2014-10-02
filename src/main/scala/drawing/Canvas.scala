@@ -27,4 +27,5 @@ object Canvas {
   def apply(str: String): Canvas = {
     Canvas(str.split('\n').map(_.toVector).toVector)
   }
+  val empty = Canvas(Vector.empty)
 }

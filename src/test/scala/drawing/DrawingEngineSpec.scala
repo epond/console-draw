@@ -18,9 +18,9 @@ class DrawingEngineSpec extends Specification {
       ||                    |
       |----------------------""".stripMargin)
 
-  "draw" should {
+  "drawLayer" should {
     "Given an empty ColourLayer and empty Canvas then return the original Canvas" in {
-      val initialCanvas = Canvas(Vector.empty)
+      val initialCanvas = Canvas.empty
       val resultCanvas = DrawingEngine.drawLayer(emptyLayer, initialCanvas)
       resultCanvas match {
         case \/-(canvas) => canvas must beEqualTo(initialCanvas)
@@ -69,7 +69,7 @@ class DrawingEngineSpec extends Specification {
 
   "applyCommand" should {
     "Given a NewCanvas command then return an empty canvas" in {
-      val resultCanvas = DrawingEngine.applyCommand(NewCanvasCommand(20, 4), Canvas(Vector.empty))
+      val resultCanvas = DrawingEngine.applyCommand(NewCanvasCommand(20, 4), Canvas.empty)
       resultCanvas match {
         case \/-(canvas) => canvas must beEqualTo(empty20by4Canvas)
         case -\/(error)  => ko(error)
