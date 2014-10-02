@@ -1,3 +1,5 @@
+import AssemblyKeys._
+
 name := "Drawing Program"
 
 version := "1.0"
@@ -8,3 +10,7 @@ libraryDependencies ++= Seq(
     "org.scalaz" %% "scalaz-core" % "7.0.0",
     "org.specs2" %% "specs2" % "2.3.8" % "test"
 )
+
+assemblySettings
+
+jarName in assembly := "drawing-program.jar"
