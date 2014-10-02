@@ -24,6 +24,11 @@ case class Canvas(rows: Vector[Vector[Char]]) {
 }
 
 object Canvas {
+  def apply(width: Int, height: Int): Canvas = {
+    val edgeRow = Vector.fill(width+2)('-')
+    val innerRow = '|' +: Vector.fill(width)(emptyPosition) :+ '|'
+    Canvas(edgeRow +: Vector.fill(height)(innerRow) :+ edgeRow)
+  }
   def apply(str: String): Canvas = {
     Canvas(str.split('\n').map(_.toVector).toVector)
   }

@@ -8,9 +8,7 @@ object DrawingEngine {
   def applyCommand(command: CanvasCommand, canvas: Canvas): (String \/ Canvas) = command match {
 
     case NewCanvasCommand(width, height) => {
-      val edgeRow = Vector.fill(width+2)('-')
-      val innerRow = '|' +: Vector.fill(width)(emptyPosition) :+ '|'
-      Canvas(edgeRow +: Vector.fill(height)(innerRow) :+ edgeRow).right
+      Canvas(width, height).right
     }
 
     case DrawLineCommand(startPos, endPos) => {
