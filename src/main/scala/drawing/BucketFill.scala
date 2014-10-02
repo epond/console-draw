@@ -8,25 +8,24 @@ object BucketFill {
     val layerPoints = new mutable.HashSet[Coordinates]
     val nodeStack = new mutable.Stack[Coordinates]
 
-    nodeStack.push(origin)
+    def pushNode(node: Coordinates) =
+      if(canvas.getNode(node).isDefined && !layerPoints.contains(node))
+        nodeStack.push(node)
+
+    pushNode(origin)
 
     while (!nodeStack.isEmpty) {
+
       val nodePosition = nodeStack.pop
+
       if (canvas.getNode(nodePosition).get == emptyPosition) {
 
         layerPoints.add(nodePosition)
 
-        if(canvas.getNode(nodePosition.left).isDefined && !layerPoints.contains(nodePosition.left))
-          nodeStack.push(nodePosition.left)
-
-        if(canvas.getNode(nodePosition.right).isDefined && !layerPoints.contains(nodePosition.right))
-          nodeStack.push(nodePosition.right)
-
-        if(canvas.getNode(nodePosition.up).isDefined && !layerPoints.contains(nodePosition.up))
-          nodeStack.push(nodePosition.up)
-
-        if(canvas.getNode(nodePosition.down).isDefined && !layerPoints.contains(nodePosition.down))
-          nodeStack.push(nodePosition.down)
+        pushNode(nodePosition.left)
+        pushNode(nodePosition.right)
+        pushNode(nodePosition.up)
+        pushNode(nodePosition.down)
       }
     }
 
