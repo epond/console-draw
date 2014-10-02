@@ -15,10 +15,9 @@ object CommandInterpreter {
             Some(NewCanvasCommand(w.toInt, h.toInt))
           }
           case Array("L", startCol, startRow, endCol, endRow) => {
-            // TODO is it wise to do validation in the command? perhaps the engine should do all the checking and be the single place to provide error message if needed
-            DrawLineCommand.build(
+            Some(DrawLineCommand(
               Coordinates(startCol.toInt, startRow.toInt),
-              Coordinates(endCol.toInt, endRow.toInt)).toOption
+              Coordinates(endCol.toInt, endRow.toInt)))
           }
           case Array("R", ulCol, ulRow, lrCol, lrRow) => {
             Some(DrawRectangleCommand(

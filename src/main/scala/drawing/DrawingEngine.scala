@@ -68,16 +68,19 @@ object DrawingEngine {
   private def drawLine(startPos: Coordinates, endPos: Coordinates, canvas: Canvas): (String \/ Canvas) = {
     val difference = endPos - startPos
 
-    // assuming only horizontal and vertical lines are being drawn
-    val linePoints = if (difference.column != 0) {
-      val step = if (difference.column > 0) 1 else -1
-      (0 to difference.column by step).map(x => Coordinates(startPos.column + x, startPos.row))
+    if (difference.row != 0 && difference.column != 0) {
+      -\/("Only horizontal and vertical lines are supported")
     } else {
-      val step = if (difference.row > 0) 1 else -1
-      (0 to difference.row by step).map(x => Coordinates(startPos.column, startPos.row + x))
-    }
+      val linePoints = if (difference.column != 0) {
+        val step = if (difference.column > 0) 1 else -1
+        (0 to difference.column by step).map(x => Coordinates(startPos.column + x, startPos.row))
+      } else {
+        val step = if (difference.row > 0) 1 else -1
+        (0 to difference.row by step).map(x => Coordinates(startPos.column, startPos.row + x))
+      }
 
-    val layer = (linePoints, lineColour)
-    drawLayer(layer, canvas)
+      val layer = (linePoints, lineColour)
+      drawLayer(layer, canvas)
+    }
   }
 }

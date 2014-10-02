@@ -138,6 +138,14 @@ class DrawingEngineSpec extends Specification {
       }
     }
 
+    "Given a DrawLine command with an oblique line then an error should be returned" in {
+      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(1,2), Coordinates(3,4)), empty20by4Canvas)
+      resultCanvas match {
+        case \/-(canvas) => ko("Expected error was not returned")
+        case -\/(error)  => error must beEqualTo("Only horizontal and vertical lines are supported")
+      }
+    }
+
     "Given a DrawRectangle command on a non-empty canvas then the Canvas should contain the rectangle" in {
       val initialCanvas =  Canvas("""----------------------
                                     ||                    |
