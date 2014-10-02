@@ -1,8 +1,5 @@
 package drawing
 
-import scalaz._
-import Scalaz._
-
 sealed trait CanvasCommand
 case class NewCanvasCommand(width: Int, height: Int) extends CanvasCommand
 case class DrawLineCommand(startPos: Coordinates, endPos: Coordinates) extends CanvasCommand
