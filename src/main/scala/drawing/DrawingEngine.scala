@@ -3,14 +3,6 @@ package drawing
 import scalaz._
 import Scalaz._
 
-case class Coordinates(column: Int, row: Int) {
-  def -(that: Coordinates): Coordinates = Coordinates(column - that.column, row - that.row)
-  lazy val left =  Coordinates(column-1, row)
-  lazy val right = Coordinates(column+1, row)
-  lazy val up =    Coordinates(column,   row-1)
-  lazy val down =  Coordinates(column,   row+1)
-}
-
 object DrawingEngine {
 
   def applyCommand(command: CanvasCommand, canvas: Canvas): (String \/ Canvas) = command match {

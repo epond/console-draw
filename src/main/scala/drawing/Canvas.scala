@@ -29,3 +29,11 @@ object Canvas {
   }
   val empty = Canvas(Vector.empty)
 }
+
+case class Coordinates(column: Int, row: Int) {
+  def -(that: Coordinates): Coordinates = Coordinates(column - that.column, row - that.row)
+  lazy val left =  Coordinates(column-1, row)
+  lazy val right = Coordinates(column+1, row)
+  lazy val up =    Coordinates(column,   row-1)
+  lazy val down =  Coordinates(column,   row+1)
+}
