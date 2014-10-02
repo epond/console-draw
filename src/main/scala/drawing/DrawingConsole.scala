@@ -1,5 +1,7 @@
 package drawing
 
+import scalaz._
+
 object DrawingConsole extends App {
   var running = true
   var canvas = Canvas.empty
@@ -11,7 +13,13 @@ object DrawingConsole extends App {
     } else {
       CommandInterpreter.parseCommand(enteredCommand) match {
         case Some(command) => {
-          println(command) // TODO
+          DrawingEngine.applyCommand(command, canvas) match {
+            case \/-(newCanvas) => {
+              canvas = newCanvas
+              println(canvas + "\n")
+            }
+            case -\/(error) => println(error)
+          }
         }
         case None => {
           println("Command not recognised")
