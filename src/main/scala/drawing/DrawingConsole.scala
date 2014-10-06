@@ -7,7 +7,7 @@ object DrawingConsole extends App {
   var canvas = Canvas.empty
 
   while(running) {
-    var enteredCommand = readLine("enter command: ")
+    val enteredCommand = readLine("enter command: ")
     if (enteredCommand.equalsIgnoreCase("q")) {
       running = false;
     } else {
