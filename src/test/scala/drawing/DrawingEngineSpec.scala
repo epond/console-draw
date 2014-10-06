@@ -4,13 +4,13 @@ import scalaz._
 import org.specs2.mutable.Specification
 
 class DrawingEngineSpec extends Specification {
-  val empty3by2Canvas  = Canvas(
+  val blank3by2Canvas  = Canvas(
     """-----
       ||   |
       ||   |
       |-----""".stripMargin)
 
-  val empty20by4Canvas = Canvas(
+  val blank20by4Canvas = Canvas(
     """----------------------
       ||                    |
       ||                    |
@@ -19,24 +19,23 @@ class DrawingEngineSpec extends Specification {
       |----------------------""".stripMargin)
 
   "drawLayer" should {
-    "Given an empty ColourLayer and empty Canvas then return the original Canvas" in {
-      val initialCanvas = Canvas.empty
-      val resultCanvas = DrawingEngine.drawLayer(emptyLayer, initialCanvas)
+    "Given an empty ColourLayer and empty Canvas then return the empty Canvas" in {
+      val resultCanvas = DrawingEngine.drawLayer(emptyLayer, Canvas.empty)
       resultCanvas match {
-        case \/-(canvas) => canvas must beEqualTo(initialCanvas)
-        case -\/(_)      => ko("No canvas")
+        case \/-(canvas) => canvas must beEqualTo(Canvas.empty)
+        case -\/(error)      => ko(error)
       }
     }
 
-    "Given an empty ColourLayer and non-empty Canvas then return the original Canvas" in {
-      val resultCanvas = DrawingEngine.drawLayer(emptyLayer, empty20by4Canvas)
+    "Given an empty ColourLayer and blank Canvas then return the blank Canvas" in {
+      val resultCanvas = DrawingEngine.drawLayer(emptyLayer, blank20by4Canvas)
       resultCanvas match {
-        case \/-(canvas) => canvas must beEqualTo(empty20by4Canvas)
+        case \/-(canvas) => canvas must beEqualTo(blank20by4Canvas)
         case -\/(error)  => ko(error)
       }
     }
 
-    "Given a non-empty ColourLayer and non-empty Canvas then return the expected Canvas" in {
+    "Given a non-empty ColourLayer and blank Canvas then return the expected Canvas" in {
       val layer = (List(Coordinates(1, 1), Coordinates(2, 2)), 'x')
       val expectedCanvas = Canvas("""----------------------
                                     ||x                   |
@@ -44,7 +43,7 @@ class DrawingEngineSpec extends Specification {
                                     ||                    |
                                     ||                    |
                                     |----------------------""".stripMargin)
-      val resultCanvas = DrawingEngine.drawLayer(layer, empty20by4Canvas)
+      val resultCanvas = DrawingEngine.drawLayer(layer, blank20by4Canvas)
       resultCanvas match {
         case \/-(canvas) => canvas must beEqualTo(expectedCanvas)
         case -\/(error)  => ko(error)
@@ -52,15 +51,15 @@ class DrawingEngineSpec extends Specification {
     }
 
     "Given a ColourLayer out of the Canvas bounds then return an error" in {
-      DrawingEngine.drawLayer((List(Coordinates(4, 1)), 'x'), empty3by2Canvas) match {
+      DrawingEngine.drawLayer((List(Coordinates(4, 1)), 'x'), blank3by2Canvas) match {
         case \/-(canvas) => ko("Expected error was not returned")
         case -\/(error)  => error must beEqualTo("Out of bounds")
       }
-      DrawingEngine.drawLayer((List(Coordinates(3,2), Coordinates(3, 3)), 'x'), empty3by2Canvas) match {
+      DrawingEngine.drawLayer((List(Coordinates(3,2), Coordinates(3, 3)), 'x'), blank3by2Canvas) match {
         case \/-(canvas) => ko("Expected error was not returned")
         case -\/(error)  => error must beEqualTo("Out of bounds")
       }
-      DrawingEngine.drawLayer((List(Coordinates(3, 3)), 'x'), empty3by2Canvas) match {
+      DrawingEngine.drawLayer((List(Coordinates(3, 3)), 'x'), blank3by2Canvas) match {
         case \/-(canvas) => ko("Expected error was not returned")
         case -\/(error)  => error must beEqualTo("Out of bounds")
       }
@@ -68,22 +67,22 @@ class DrawingEngineSpec extends Specification {
   }
 
   "applyCommand" should {
-    "Given a NewCanvas command then return an empty canvas" in {
+    "Given a NewCanvas command then return a blank canvas" in {
       val resultCanvas = DrawingEngine.applyCommand(NewCanvasCommand(20, 4), Canvas.empty)
       resultCanvas match {
-        case \/-(canvas) => canvas must beEqualTo(empty20by4Canvas)
+        case \/-(canvas) => canvas must beEqualTo(blank20by4Canvas)
         case -\/(error)  => ko(error)
       }
     }
 
-    "Given a DrawLine command on an empty canvas then the Canvas should contain the line" in {
+    "Given a DrawLine command on a blank canvas then the Canvas should contain the line" in {
       val expectedCanvas = Canvas("""----------------------
                                     ||                    |
                                     ||xxxxxx              |
                                     ||                    |
                                     ||                    |
                                     |----------------------""".stripMargin)
-      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(1,2), Coordinates(6,2)), empty20by4Canvas)
+      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(1,2), Coordinates(6,2)), blank20by4Canvas)
       resultCanvas match {
         case \/-(canvas) => canvas must beEqualTo(expectedCanvas)
         case -\/(error)  => ko(error)
@@ -97,7 +96,7 @@ class DrawingEngineSpec extends Specification {
                                     ||                    |
                                     ||                    |
                                     |----------------------""".stripMargin)
-      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(6,2), Coordinates(1,2)), empty20by4Canvas)
+      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(6,2), Coordinates(1,2)), blank20by4Canvas)
       resultCanvas match {
         case \/-(canvas) => canvas must beEqualTo(expectedCanvas)
         case -\/(error)  => ko(error)
@@ -111,14 +110,14 @@ class DrawingEngineSpec extends Specification {
                                     ||                    |
                                     ||                    |
                                     |----------------------""".stripMargin)
-      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(2,2), Coordinates(2,1)), empty20by4Canvas)
+      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(2,2), Coordinates(2,1)), blank20by4Canvas)
       resultCanvas match {
         case \/-(canvas) => canvas must beEqualTo(expectedCanvas)
         case -\/(error)  => ko(error)
       }
     }
 
-    "Given a DrawLine command on a non-empty canvas then the Canvas should be as expected" in {
+    "Given a DrawLine command then the Canvas should contain both old and new drawings" in {
       val initialCanvas =  Canvas("""----------------------
                                     ||                    |
                                     ||xxxxxx              |
@@ -139,14 +138,14 @@ class DrawingEngineSpec extends Specification {
     }
 
     "Given a DrawLine command with an oblique line then an error should be returned" in {
-      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(1,2), Coordinates(3,4)), empty20by4Canvas)
+      val resultCanvas = DrawingEngine.applyCommand(DrawLineCommand(Coordinates(1,2), Coordinates(3,4)), blank20by4Canvas)
       resultCanvas match {
         case \/-(canvas) => ko("Expected error was not returned")
         case -\/(error)  => error must beEqualTo("Only horizontal and vertical lines are supported")
       }
     }
 
-    "Given a DrawRectangle command on a non-empty canvas then the Canvas should contain the rectangle" in {
+    "Given a DrawRectangle command then the Canvas should contain the rectangle" in {
       val initialCanvas =  Canvas("""----------------------
                                     ||                    |
                                     ||xxxxxx              |
@@ -226,7 +225,7 @@ class DrawingEngineSpec extends Specification {
       }
     }
 
-    "Given a BucketFill command on an occupied position then do nothing" in {
+    "Given a BucketFill command on a non-empty origin position then do nothing" in {
       val initialCanvas =  Canvas("""----------------------
                                     ||               xxxxx|
                                     ||xxxxxx         x   x|
