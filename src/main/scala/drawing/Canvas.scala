@@ -6,16 +6,7 @@ case class Canvas(rows: Vector[Vector[Char]]) {
   val width = if (rows.size == 0) 0 else rows(0).size - 2
 
   override def toString: String = {
-    val rowsWithLineBreaks = for {
-      rowWithIndex <- rows.zipWithIndex
-    } yield {
-      val (row, rowIndex) = rowWithIndex
-      if (rowIndex <= (height))
-        row :+ '\n'
-      else
-        row
-    }
-    rowsWithLineBreaks.flatten.mkString
+    rows.map(_.mkString).mkString("\n")
   }
 
   def getNode(position: Coordinates): Option[Char] = {
