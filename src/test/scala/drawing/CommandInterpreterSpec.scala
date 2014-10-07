@@ -28,6 +28,12 @@ class CommandInterpreterSpec extends Specification {
       )
     }
 
+    "parse clear" in {
+      CommandInterpreter.parseCommand("CLR") must beEqualTo(
+        Some(ClearCommand)
+      )
+    }
+
     "handle unrecognised command" in {
       CommandInterpreter.parseCommand("unknown") must beNone
     }

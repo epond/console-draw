@@ -32,6 +32,8 @@ object DrawingEngine {
       }
     }
 
+    case ClearCommand => \/-(Canvas(canvas.width, canvas.height))
+
   }
 
   def drawLayer(layer: ColourLayer, canvas: Canvas): (String \/ Canvas) = {

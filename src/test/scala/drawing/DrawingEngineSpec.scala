@@ -239,5 +239,19 @@ class DrawingEngineSpec extends Specification {
       }
     }
 
+    "Given a Clear command with a non-empty Canvas then return a blank Canvas of the same dimensions" in {
+      val initialCanvas =  Canvas("""----------------------
+                                    ||               xxxxx|
+                                    ||xxxxxx         x   x|
+                                    ||     x         xxxxx|
+                                    ||     x              |
+                                    |----------------------""".stripMargin)
+      val resultCanvas = DrawingEngine.applyCommand(ClearCommand, initialCanvas)
+      resultCanvas match {
+        case \/-(canvas) => canvas must beEqualTo(blank20by4Canvas)
+        case -\/(error)  => ko(error)
+      }
+    }
+
   }
 }

@@ -29,6 +29,9 @@ object CommandInterpreter {
               Coordinates(originCol.toInt, originRow.toInt),
               colour.charAt(0)))
           }
+          case Array("CLR") => {
+            Some(ClearCommand)
+          }
           case _ => None
         }
       } catch {
