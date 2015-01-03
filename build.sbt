@@ -1,6 +1,6 @@
 import AssemblyKeys._
 
-name := "Drawing Program"
+name := "Console Draw"
 
 version := "1.0"
 
@@ -13,4 +13,4 @@ libraryDependencies ++= Seq(
 
 assemblySettings
 
-jarName in assembly := "drawing-program.jar"
+jarName in assembly := "console-draw.jar"
