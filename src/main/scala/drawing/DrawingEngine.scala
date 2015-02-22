@@ -42,19 +42,22 @@ object DrawingEngine {
     if (points.exists(isOutOfBounds(_, canvas))) {
       -\/("Out of bounds")
     } else {
-      points.foldRight(canvas){(point, canv) => Canvas(
-        for {
-          rowWithIndex <- canv.rows.zipWithIndex
-        } yield {
-          val (row, rowIndex) = rowWithIndex
-          if (rowIndex == point.row) {
-            row.updated(point.column, colour)
-          } else {
-            row
-          }
-        })
-      }.right
+      points.foldRight(canvas)(plot(colour)).right
     }
+  }
+
+  def plot(colour: Char)(point: Coordinates, canv: Canvas): Canvas = {
+    Canvas(
+      for {
+        rowWithIndex <- canv.rows.zipWithIndex
+      } yield {
+        val (row, rowIndex) = rowWithIndex
+        if (rowIndex == point.row) {
+          row.updated(point.column, colour)
+        } else {
+          row
+        }
+      })
   }
 
   private def drawLine(startPos: Coordinates, endPos: Coordinates, canvas: Canvas): (String \/ Canvas) = {
