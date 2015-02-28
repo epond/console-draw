@@ -7,32 +7,28 @@ object DrawingEngine {
 
   def applyCommand(command: CanvasCommand, canvas: Canvas): (String \/ Canvas) = command match {
 
-    case NewCanvasCommand(width, height) => {
+    case NewCanvasCommand(width, height) =>
       Canvas(width, height).right
-    }
 
-    case DrawLineCommand(startPos, endPos) => {
-      drawLine(startPos, endPos, canvas)
-    }
+    case DrawLineCommand(startPos, endPos) =>
+      drawLine(startPos, endPos)(canvas)
 
-    case DrawRectangleCommand(ulCorner: Coordinates, lrCorner: Coordinates) => {
-      for {
-        canvas1 <- drawLine(Coordinates(ulCorner.column, ulCorner.row), Coordinates(lrCorner.column, ulCorner.row), canvas)
-        canvas2 <- drawLine(Coordinates(lrCorner.column, ulCorner.row), Coordinates(lrCorner.column, lrCorner.row), canvas1)
-        canvas3 <- drawLine(Coordinates(lrCorner.column, lrCorner.row), Coordinates(ulCorner.column, lrCorner.row), canvas2)
-        canvas4 <- drawLine(Coordinates(ulCorner.column, lrCorner.row), Coordinates(ulCorner.column, ulCorner.row), canvas3)
-      } yield canvas4
-    }
+    case DrawRectangleCommand(ulCorner: Coordinates, lrCorner: Coordinates) =>
+      canvas.right flatMap
+        drawLine(Coordinates(ulCorner.column, ulCorner.row), Coordinates(lrCorner.column, ulCorner.row)) flatMap
+        drawLine(Coordinates(lrCorner.column, ulCorner.row), Coordinates(lrCorner.column, lrCorner.row)) flatMap
+        drawLine(Coordinates(lrCorner.column, lrCorner.row), Coordinates(ulCorner.column, lrCorner.row)) flatMap
+        drawLine(Coordinates(ulCorner.column, lrCorner.row), Coordinates(ulCorner.column, ulCorner.row))
 
-    case BucketFillCommand(origin: Coordinates, colour: Char) => {
+    case BucketFillCommand(origin: Coordinates, colour: Char) =>
       if (isOutOfBounds(origin, canvas)) {
         -\/("Out of bounds")
       } else {
         drawLayer(BucketFill.buildLayer(origin, colour, canvas), canvas)
       }
-    }
 
-    case ClearCommand => \/-(Canvas(canvas.width, canvas.height))
+    case ClearCommand =>
+      \/-(Canvas(canvas.width, canvas.height))
 
   }
 
@@ -51,7 +47,7 @@ object DrawingEngine {
     Canvas(canv.rows.updated(point.row, newrow))
   }
 
-  private def drawLine(startPos: Coordinates, endPos: Coordinates, canvas: Canvas): (String \/ Canvas) = {
+  private def drawLine(startPos: Coordinates, endPos: Coordinates)(canvas: Canvas): (String \/ Canvas) = {
     val difference = endPos - startPos
 
     if (difference.row != 0 && difference.column != 0) {
