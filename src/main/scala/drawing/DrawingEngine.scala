@@ -5,7 +5,7 @@ import Scalaz._
 
 object DrawingEngine {
 
-  def applyCommand(command: CanvasCommand, canvas: Canvas): (String \/ Canvas) = command match {
+  def applyCommand(command: CanvasCommand)(canvas: Canvas): (String \/ Canvas) = command match {
 
     case NewCanvasCommand(width, height) =>
       Canvas(width, height).right

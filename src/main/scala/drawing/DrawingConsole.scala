@@ -13,7 +13,7 @@ object DrawingConsole extends App {
     } else {
       CommandInterpreter.parseCommand(enteredCommand) match {
         case Some(command) => {
-          DrawingEngine.applyCommand(command, canvas) match {
+          DrawingEngine.applyCommand(command)(canvas) match {
             case \/-(newCanvas) => {
               canvas = newCanvas
               println(canvas + "\n")
