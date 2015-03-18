@@ -1,5 +1,6 @@
 package drawing
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.collection.immutable
 
@@ -22,6 +23,7 @@ object BucketFill {
       else
         nodeStack
 
+    @tailrec
     def fillAcc(layerPoints: Set, nodeStack: Stack): Set = {
       if (nodeStack.isEmpty) {
         layerPoints
