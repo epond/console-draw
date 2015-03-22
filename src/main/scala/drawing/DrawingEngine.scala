@@ -33,12 +33,10 @@ object DrawingEngine {
   }
 
   def drawLayer(layer: ColourLayer, canvas: Canvas): (String \/ Canvas) = {
-    val (points, colour) = layer
-
-    if (points.exists(isOutOfBounds(_, canvas))) {
+    if (layer.points.exists(isOutOfBounds(_, canvas))) {
       -\/("Out of bounds")
     } else {
-      points.foldLeft(canvas)(plot(colour)).right
+      layer.points.foldLeft(canvas)(plot(layer.colour)).right
     }
   }
 
@@ -61,8 +59,7 @@ object DrawingEngine {
         (0 to difference.row by step).map(x => Coordinates(startPos.column, startPos.row + x))
       }
 
-      val layer = (linePoints, lineColour)
-      drawLayer(layer, canvas)
+      drawLayer(ColourLayer(linePoints, lineColour), canvas)
     }
   }
 }

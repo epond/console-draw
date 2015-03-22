@@ -29,7 +29,7 @@ class DrawingEngineSpec extends Specification {
     }
 
     "Given a non-empty ColourLayer and blank Canvas then return the expected Canvas" in {
-      val layer = (List(Coordinates(1, 1), Coordinates(2, 2)), 'x')
+      val layer = ColourLayer(List(Coordinates(1, 1), Coordinates(2, 2)), 'x')
       val expectedCanvas = Canvas("""----------------------
                                     ||x                   |
                                     || x                  |
@@ -41,9 +41,9 @@ class DrawingEngineSpec extends Specification {
     }
 
     "Given a ColourLayer out of the Canvas bounds then return an error" in {
-      DrawingEngine.drawLayer((List(Coordinates(4, 1)), 'x'), blank3by2Canvas) must beEqualTo(-\/("Out of bounds"))
-      DrawingEngine.drawLayer((List(Coordinates(3,2), Coordinates(3, 3)), 'x'), blank3by2Canvas) must beEqualTo(-\/("Out of bounds"))
-      DrawingEngine.drawLayer((List(Coordinates(3, 3)), 'x'), blank3by2Canvas) must beEqualTo(-\/("Out of bounds"))
+      DrawingEngine.drawLayer(ColourLayer(List(Coordinates(4, 1)), 'x'), blank3by2Canvas) must beEqualTo(-\/("Out of bounds"))
+      DrawingEngine.drawLayer(ColourLayer(List(Coordinates(3,2), Coordinates(3, 3)), 'x'), blank3by2Canvas) must beEqualTo(-\/("Out of bounds"))
+      DrawingEngine.drawLayer(ColourLayer(List(Coordinates(3, 3)), 'x'), blank3by2Canvas) must beEqualTo(-\/("Out of bounds"))
     }
   }
 

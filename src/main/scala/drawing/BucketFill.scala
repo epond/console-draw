@@ -24,24 +24,26 @@ object BucketFill {
         nodeStack
 
     @tailrec
-    def fillAcc(layerPoints: Set, nodeStack: Stack): Set = {
+    def buildLayerIter(layerPoints: Set, nodeStack: Stack): Set = {
       if (nodeStack.isEmpty) {
         layerPoints
       } else {
         val (node, poppedStack) = nodeStack.pop2
         val (newPoints, newStack) = if (canvas.getNode(node).get == emptyPosition) {
-          val push = pushNode(layerPoints)_
-          // TODO Can push be used as an infix operator?
-          val tempStack = push(push(push(push(poppedStack, node.left), node.right), node.up), node.down)
-          (layerPoints + node, tempStack)
+          val tempStack = NodeStack(canvas, poppedStack, layerPoints) push
+            node.left push node.right push node.up push node.down
+          (layerPoints + node, tempStack.stack)
         } else {
           (layerPoints, poppedStack)
         }
-        fillAcc(newPoints, newStack)
+        buildLayerIter(newPoints, newStack)
       }
     }
 
-    (fillAcc(new Set, new Stack().push(origin)).toSeq, colour)
+    val initialPoints = new Set
+    val initialStack = new Stack().push(origin)
+    val layerPoints = buildLayerIter(initialPoints, initialStack).toSeq
+    ColourLayer(layerPoints, colour)
   }
 
   private def buildLayerWithMutableStack(origin: Coordinates, colour: Char, canvas: Canvas): ColourLayer = {
@@ -69,7 +71,18 @@ object BucketFill {
       }
     }
 
-    (layerPoints.toSeq, colour)
+    ColourLayer(layerPoints.toSeq, colour)
   }
 
+}
+
+case class NodeStack(canvas: Canvas, stack: immutable.Stack[Coordinates], layerPoints: immutable.HashSet[Coordinates]) {
+  def push(node: Coordinates): NodeStack = {
+    val newStack = if(canvas.getNode(node).isDefined && !layerPoints.contains(node))
+      stack.push(node)
+    else
+      stack
+
+    NodeStack(canvas, newStack, layerPoints)
+  }
 }
