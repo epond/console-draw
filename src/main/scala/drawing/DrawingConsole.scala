@@ -1,6 +1,6 @@
 package drawing
 
-import scalaz._
+import bettereither._
 
 object DrawingConsole extends App {
   var running = true

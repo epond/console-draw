@@ -1,20 +1,19 @@
 package drawing
 
-import scalaz._
-import Scalaz._
+import bettereither._
 
 object DrawingEngine {
 
   def applyCommand(command: CanvasCommand)(canvas: Canvas): (String \/ Canvas) = command match {
 
     case NewCanvasCommand(width, height) =>
-      Canvas(width, height).right
+      \/-(Canvas(width, height))
 
     case DrawLineCommand(startPos, endPos) =>
       drawLine(startPos, endPos)(canvas)
 
     case DrawRectangleCommand(ulCorner: Coordinates, lrCorner: Coordinates) =>
-      canvas.right flatMap
+      \/-(canvas) flatMap
         drawLine(Coordinates(ulCorner.column, ulCorner.row), Coordinates(lrCorner.column, ulCorner.row)) flatMap
         drawLine(Coordinates(lrCorner.column, ulCorner.row), Coordinates(lrCorner.column, lrCorner.row)) flatMap
         drawLine(Coordinates(lrCorner.column, lrCorner.row), Coordinates(ulCorner.column, lrCorner.row)) flatMap
@@ -36,7 +35,7 @@ object DrawingEngine {
     if (layer.points.exists(isOutOfBounds(_, canvas))) {
       -\/("Out of bounds")
     } else {
-      layer.points.foldLeft(canvas)(plot(layer.colour)).right
+      \/-(layer.points.foldLeft(canvas)(plot(layer.colour)))
     }
   }
 

@@ -1,7 +1,6 @@
 package drawing
 
-import scalaz._
-import Scalaz._
+import bettereither._
 import org.specs2.mutable.Specification
 
 class DrawingEngineSpec extends Specification {
@@ -198,7 +197,7 @@ class DrawingEngineSpec extends Specification {
 
     "Given a BucketFill command on a very large canvas a stack overflow is not encountered" in {
       val canvasEither =
-        Canvas.empty.right flatMap
+        \/-(Canvas.empty) flatMap
           DrawingEngine.applyCommand(NewCanvasCommand(500, 500))_ flatMap
             DrawingEngine.applyCommand(BucketFillCommand(Coordinates(1, 1), 'o'))_
 
